@@ -74,7 +74,7 @@ public class AesCrypt extends CryptBase{
         } else if (_name.equals(CIPHER_AES_256_OFB)) {
             cipher = new OFBBlockCipher(engine, getIVLength() * 8);
         } else {
-            throw new InvalidAlgorithmParameterException(_name)
+            throw new InvalidAlgorithmParameterException(_name);
         }
 
         return cipher;

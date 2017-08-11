@@ -2,11 +2,13 @@ package com.charles.misc;
 
 //import com.sun.jmx.remote.internal.IIOPProxy;
 import com.charles.network.proxy.IProxy;
+import com.charles.ss.AesCrypt;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 /**
  * Created by Administrator on 2017/7/14.
+ * Config data to server
  */
 public class Config {
     private String _ipAddr;
@@ -21,6 +23,59 @@ public class Config {
     public Config() {
         loadFromJson("");
     }
+
+    public Config(String ipAddr, int port, String localIpAddr, int localPort, String method, String password) {
+        //loadFromJson at first;
+        this();
+        _ipAddr = ipAddr;
+        _port = port;
+        _localIpAddr = localIpAddr;
+        _localPort = localPort;
+        _method = method;
+        _password = password;
+        //Auto config IproxyType
+        _proxyType = IProxy.TYPE.AUTO;
+
+    }
+
+    public Config(String ipAddr, int port, String localIpAddr, int localPort, String method, String password, IProxy.TYPE type) {
+        this(ipAddr, port, localIpAddr, localPort, method, password);
+        _proxyType = type;
+    }
+
+    //
+    public void setRemoteIpAddress(String value) {
+        _ipAddr = value;
+    }
+
+    public String getRemoteIpAddress() {
+        return _ipAddr;
+    }
+
+    public void setLocalIpAddress(String value) {
+        _localIpAddr = value;
+    }
+
+    public String getLocalIpAddress() {
+        return _localIpAddr;
+    }
+
+    public void setRemotePort(int value) {
+        _port = value;
+    }
+
+    public int getRemotePort() {
+        return _port;
+    }
+
+    public void setLocalPort(int value) {
+        _localPort = value;
+    }
+
+    public int getLocalPort() {
+        return _localPort;
+    }
+
 
     public void set_proxyType(String value) {
         _proxyType = IProxy.TYPE.AUTO;
@@ -53,6 +108,7 @@ public class Config {
 
     public void loadFromJson(String jsonStr) {
         if (jsonStr.length() == 0) {
+            //config as {}
             jsonStr = "{}";
         }
 

@@ -47,7 +47,6 @@ public class Config {
     public void setRemoteIpAddress(String value) {
         _ipAddr = value;
     }
-
     public String getRemoteIpAddress() {
         return _ipAddr;
     }
@@ -55,7 +54,6 @@ public class Config {
     public void setLocalIpAddress(String value) {
         _localIpAddr = value;
     }
-
     public String getLocalIpAddress() {
         return _localIpAddr;
     }
@@ -63,7 +61,6 @@ public class Config {
     public void setRemotePort(int value) {
         _port = value;
     }
-
     public int getRemotePort() {
         return _port;
     }
@@ -71,13 +68,33 @@ public class Config {
     public void setLocalPort(int value) {
         _localPort = value;
     }
-
     public int getLocalPort() {
         return _localPort;
     }
 
+    public void setProxyType (IProxy.TYPE value) {
+        _proxyType = value;
+    }
+    public IProxy.TYPE get_proxyType (){
+        return _proxyType;
+    }
 
-    public void set_proxyType(String value) {
+    public void setMethod(String value) {
+        _method = value;
+    }
+    public String getMethod() {
+        return _method;
+    }
+
+    public void setPassword(String value) {
+        _password = value;
+    }
+    public String getPassword() {
+        return _password;
+    }
+
+
+    public void setProxyType(String value) {
         _proxyType = IProxy.TYPE.AUTO;
         //Eliminate the effect of letter case on the results
         if (value.toLowerCase().equals(IProxy.TYPE.HTTP.toString().toLowerCase())) {
@@ -85,14 +102,6 @@ public class Config {
         } else if (value.toLowerCase().equals(IProxy.TYPE.SOCKS5.toString().toLowerCase())){
             _proxyType = IProxy.TYPE.SOCKS5;
         }
-    }
-
-    public void set_proxyType (IProxy.TYPE value) {
-        _proxyType = value;
-    }
-
-    public IProxy.TYPE get_proxyType (){
-        return _proxyType;
     }
 
     public void set_logLevel(String value) {
@@ -121,7 +130,7 @@ public class Config {
         _method = (String) jObj.getOrDefault("method", AesCrypt.CIPHER_AES_256_CFB);
         _password = (String) jObj.getOrDefault("password", "");
         _logLevel = (String ) jObj.getOrDefault("logLevel", "INFO");
-        set_proxyType((String) jObj.getOrDefault("proxyType", IProxy.TYPE.SOCKS5.toString().toLowerCase()));
+        setProxyType((String) jObj.getOrDefault("proxyType", IProxy.TYPE.SOCKS5.toString().toLowerCase()));
         set_logLevel(_logLevel);
     }
 

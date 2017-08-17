@@ -1,11 +1,9 @@
 package com.charles.misc;
 
+import com.charles.network.proxy.Socks5Proxy;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.security.SecureRandom;
 import java.sql.Statement;
 
@@ -17,7 +15,7 @@ public class Util {
     public static String dumpBytes(byte[] a) {
         StringBuilder sb = new StringBuilder(a.length*2);
         for(byte b: a)
-            sb.append(String.format("%", b & 0xff));
+            sb.append(String.format("%x", b & 0xff));
         return sb.toString();
     }
 
@@ -83,5 +81,28 @@ public class Util {
         }
 
         return retValue;
+    }
+
+    public static byte[] composeSSHeader(String host, int port) {
+        //TYPE (1 byte) + LENGTH (1 byte) + HOST(var byte) + PORT(2 bytes)
+        byte[] respData = new byte[host.length() + 4];
+
+        respData[0] = Socks5Proxy.ATYP_DOMAIN_NAME;
+        respData[1] = (byte) host.length();
+        System.arraycopy(host.getBytes(), 0, respData, 2, host.length());
+        respData[host.length() + 2] = (byte) (port >> 8);
+        respData[host.length() + 3] = (byte) (port & 0xFF);
+
+        return respData;
+    }
+
+    public static String bytesToString(byte[] data, int start, int length) {
+        String str = "";
+        try {
+            str = new String(data, start, length, "UTF-8");
+        } catch (UnsupportedEncodingException  e) {
+            e.printStackTrace();    //print at command line
+        }
+        return str;
     }
 }

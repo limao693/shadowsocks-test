@@ -142,6 +142,42 @@ public class HttpProxy implements IProxy{
         String[] httpHeaders = httpRequset.split("\\r?\\n");    //end with \r or \n
         StringBuilder sb = new StringBuilder();
         boolean isFirstLine = true;
+
+        for (String line : httpHeaders) {
+            if (isFirstLine && _isHttpConnect) {
+                sb.append(method.get("method"));
+                sb.append(" ");
+                sb.append(method.get("host"));
+                sb.append(" ");
+                sb.append("version");
+                sb.append("\r\n");
+                sb.append("User-Agent: test/0.1\r\n");
+                break;
+            } else if (isFirstLine) {
+                sb.append(method.get("method"));
+                sb.append(" ");
+                sb.append(method.get("url"));
+                sb.append(" ");
+                sb.append(method.get("version"));
+                isFirstLine = false;
+            } else if (line.toLowerCase().contains("cache-control")) {
+                sb.append("Pragma: no-cache\r\n");
+                sb.append("Cache-Control: no-cache");
+            } else if (line.toLowerCase().contains("proxy-connection")) {
+                String[] fields = line.split(":");
+                sb.append("Connection: ");
+                sb.append(fields[1].trim());
+            } else if (line.toLowerCase().contains("if-none-match")) {
+                continue;
+            } else if (line.toLowerCase().contains("if-modified-since")) {
+                continue;
+            } else {
+                sb.append(line);
+            }
+            sb.append("\r\n");
+        }
+        sb.append("\r\n");
+        return sb.toString().getBytes();
     }
 
     private void setHttpMethod(Map<String, String> header) {

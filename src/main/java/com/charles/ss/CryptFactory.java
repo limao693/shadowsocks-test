@@ -35,6 +35,7 @@ public class CryptFactory {
         return null;
     }
 
+    //Used in the main function, return List
     public static List<String> getSupportedCiphers() {
         List sortedKeys = new ArrayList<>(crypts.keySet());
         Collections.sort(sortedKeys);

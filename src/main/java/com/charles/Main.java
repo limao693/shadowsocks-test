@@ -18,7 +18,11 @@ public class Main {
     private static Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-        MainGui.launch(MainGui.class);
+        if (args.length != 0) {
+            startCommand(args);
+        } else {
+            MainGui.launch(MainGui.class);
+        }
     }
 
     private static void startCommand(String[] args) {

@@ -3,6 +3,7 @@ package com.charles.network.nio;
 import com.charles.misc.Config;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -61,6 +62,27 @@ public class RemoteSocketHandler extends SocketHandlerBase{
 
         }
         return true;
+    }
+
+    public PipeWorker createPipe(ISocketHandler localHandler, SocketChannel localChannel, String ipAddress, int port) throws IOException {
+        //prepare remote socket
+        SocketChannel socketChannel = SocketChannel.open();
+        socketChannel.configureBlocking(false);
+        socketChannel.connect(new InetSocketAddress(ipAddress, port));
+
+        //create write buffer for specified socket
+        creatWriterBuffer(socketChannel);
+
+        //create pipe worker for handing encrypt and decrypt
+        PipeWorker pipe = new PipeWorker(localHandler, localChannel, this, socketChannel, _config);
+
+        //setup pipe info
+        //pipe.setRemoteChannel(socketChannel);
+        _pipe.put(socketChannel, pipe);
+        synchronized (_pendingRequest) {
+            _pendingRequest.add(new ChangeRequest(socketChannel, ChangeRequest.REGISTER_ChANNEL, SelectionKey.OP_CONNECT));
+        }
+        return pipe;
     }
 
     @Override

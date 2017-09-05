@@ -3,12 +3,14 @@ package com.charles.network.nio;
 import com.charles.misc.Config;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.security.InvalidAlgorithmParameterException;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -67,7 +69,7 @@ public class RemoteSocketHandler extends SocketHandlerBase{
             if (key.isConnectable()) {
                 finishConnection(key);
             }else if (key.isReadable()) {
-                ready(key);
+                read(key);
             }else if (key.isWritable()) {
                 write(key);
             }
@@ -89,7 +91,7 @@ public class RemoteSocketHandler extends SocketHandlerBase{
         key.interestOps(SelectionKey.OP_WRITE);
     }
 
-    private void ready(SelectionKey key) throws IOException{
+    private void read(SelectionKey key) throws IOException{
         SocketChannel socketChannel = (SocketChannel) key.channel();
         PipeWorker pipe = _pipe.get(socketChannel);
         if (pipe != null) {
@@ -115,9 +117,34 @@ public class RemoteSocketHandler extends SocketHandlerBase{
             cleanUp(socketChannel);
             return;
         }
-        
+
         //Handle the response
         pipe.processData(_readBuffer.array(), readCount, false);
+    }
+
+    private void write(SelectionKey key) throws IOException{
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+
+        List queue = (List) _pendingData.get(socketChannel);
+        if (queue != null) {
+            synchronized (queue) {
+                //write data to socket
+                while (!queue.isEmpty()) {
+                    ByteBuffer buf = (ByteBuffer) queue.get(0);
+                    socketChannel.write(buf);
+                    if (buf.remaining() > 0) {
+                        break;
+                    }
+                    queue.remove(0);
+                }
+                if (queue.isEmpty()) {
+                    key.interestOps(SelectionKey.OP_READ);
+                }
+            }
+        }else {
+            logger.warning("RemoteSocket::Write queue = null: " + socketChannel.toString());
+            return;
+        }
     }
 
     @Override

@@ -64,10 +64,60 @@ public class RemoteSocketHandler extends SocketHandlerBase{
     @Override
     protected void processSelect(SelectionKey key) {
         try {
-            if () {
-
+            if (key.isConnectable()) {
+                finishConnection(key);
+            }else if (key.isReadable()) {
+                ready(key);
+            }else if (key.isWritable()) {
+                write(key);
             }
+        }catch (IOException e) {
+            cleanUp((SocketChannel) key.channel());
         }
+    }
+
+    private void finishConnection(SelectionKey key) throws IOException{
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+
+        try {
+            socketChannel.finishConnect();
+        } catch (IOException e) {
+            logger.warning("RemoteSockethandler::finishConnection I/O exception: "+ e.toString());
+            cleanUp(socketChannel);
+            return;
+        }
+        key.interestOps(SelectionKey.OP_WRITE);
+    }
+
+    private void ready(SelectionKey key) throws IOException{
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+        PipeWorker pipe = _pipe.get(socketChannel);
+        if (pipe != null) {
+            //should not happen
+            cleanUp(socketChannel);
+            return;
+        }
+
+        //clear read buffer for new data
+        _readBuffer.clear();
+
+        //read data
+        int readCount;
+        try {
+            readCount = socketChannel.read(_readBuffer);
+        }catch (IOException e) {
+            //remote socket closed
+            cleanUp(socketChannel);
+            return;
+        }
+
+        if (readCount == -1) {
+            cleanUp(socketChannel);
+            return;
+        }
+        
+        //Handle the response
+        pipe.processData(_readBuffer.array(), readCount, false);
     }
 
     @Override

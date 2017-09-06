@@ -1,6 +1,8 @@
 package com.charles;
 
 import com.charles.misc.Config;
+import com.charles.misc.Util;
+import com.charles.network.NioLocalServer;
 import com.charles.network.proxy.IProxy;
 import com.charles.network.proxy.ProxyFactory;
 import com.charles.ss.CryptFactory;
@@ -31,6 +33,16 @@ public class Main {
         if (config == null) {
             printUsage();
             return;
+        }
+
+        //存储，并返回是否存入
+        Util.saveFile(Constant.CONF_FILE, config.saveToJson());
+
+        try {
+            NioLocalServer server = new NioLocalServer(config);
+            Thread thread = new Thread(server);
+            thread.start();
+            thread.j
         }
     }
 

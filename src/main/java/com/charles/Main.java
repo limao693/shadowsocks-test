@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidAlgorithmParameterException;
 import java.util.logging.Logger;
 
 /**
@@ -39,10 +40,13 @@ public class Main {
         Util.saveFile(Constant.CONF_FILE, config.saveToJson());
 
         try {
+            //LocalServer server = new LocalServer(config);
             NioLocalServer server = new NioLocalServer(config);
             Thread thread = new Thread(server);
             thread.start();
-            thread.j
+            thread.join();
+        } catch (Exception e) {
+            logger.warning("Unable to start NIO_server: " + e.toString());
         }
     }
 

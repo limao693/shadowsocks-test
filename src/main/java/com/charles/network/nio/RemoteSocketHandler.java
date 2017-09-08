@@ -171,7 +171,7 @@ public class RemoteSocketHandler extends SocketHandlerBase{
 
     @Override
     protected void cleanUp(SocketChannel socketChannel) {
-        super.cheanUp(socketChannel);
+        super.cleanUp(socketChannel);
 
         PipeWorker pipe = _pipe.get(socketChannel);
         if (pipe != null) {

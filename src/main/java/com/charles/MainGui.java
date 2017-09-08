@@ -1,10 +1,12 @@
 package com.charles;
 
+import com.charles.ui.MainLayoutController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -25,7 +27,8 @@ public class MainGui extends Application {
     //javafx中 场景初始化为rootScene
     private Stage primaryStage;
     private Scene rootScene;
-
+    private MainLayoutController controller;
+    //java.awt的系统托盘
     private TrayIcon trayIcon;
 
     @Override
@@ -43,8 +46,13 @@ public class MainGui extends Application {
             primaryStage.setScene(rootScene);
             primaryStage.setResizable(false);
 
+            controller = mainLayoutLoader.getController();
+            controller.setMainGui(this);
+
             addToTray();
 
+            primaryStage.getIcons().add(new Image(MainGui.class.getResource("/resources/image/icon.png").toString()));
+            primaryStage.show();
 
         } catch (IOException e) {
             e.printStackTrace();

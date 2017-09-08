@@ -14,13 +14,15 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 
 /**
  * Created by Administrator on 2017/7/14.
  */
 public class MainGui extends Application {
     private static Logger logger = Logger.getLogger(MainGui.class.getName());
-
+    //javafx中 舞台初始化为primaryStage
+    //javafx中 场景初始化为rootScene
     private Stage primaryStage;
     private Scene rootScene;
 
@@ -118,5 +120,17 @@ public class MainGui extends Application {
     public void hide() {
         primaryStage.hide();
     }
+
+    public void setTooltip(String message) {
+        if (trayIcon != null) {
+            trayIcon.setToolTip(message);
+        }
+    }
+
+    public void showNotification(String message) {
+        trayIcon.displayMessage("shadowSocks-test", message, TrayIcon.MessageType.INFO);
+    }
+
+
 
 }

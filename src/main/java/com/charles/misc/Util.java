@@ -4,6 +4,9 @@ import com.charles.network.proxy.Socks5Proxy;
 import org.json.simple.JSONObject;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.sql.Statement;
 
@@ -153,6 +156,18 @@ public class Util {
             e.printStackTrace();    //print at command line
         }
         return str;
+    }
+
+    public static String getFileContent(String fn) {
+        Path path = Paths.get(fn);
+        String content = "";
+        try {
+            content = new String(Files.readAllBytes(path));
+        } catch (IOException e) {
+            // do nothing
+        }
+
+        return content;
     }
 
     private static short bytesToUnsignedByte(byte b) {

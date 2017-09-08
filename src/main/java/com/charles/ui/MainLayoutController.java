@@ -3,6 +3,7 @@ package com.charles.ui;
 import com.charles.Constant;
 import com.charles.MainGui;
 import com.charles.misc.Config;
+import com.charles.misc.UTF8Control;
 import com.charles.misc.Util;
 import com.charles.network.IServer;
 import com.charles.network.NioLocalServer;
@@ -160,6 +161,27 @@ public class MainLayoutController {
         }
         btnStop.setEnabled(true);
         btnStart.setEnabled(false);
+    }
+
+    @FXML
+    private void handleStop() {
+        if (server != null) {
+            server.close();
+            String message = String.format("(Disconnected) Server %s:%d", config.getRemoteIpAddress(), config.getRemotePort());
+            gui.showNotification(message);
+            gui.setTooltip("Not Connected");
+        }
+
+        btnStop.setEnabled(false);
+        btnStart.setEnabled(true);
+    }
+
+    public void setMainGui(MainGui gui) {
+        this.gui = gui;
+    }
+
+    public void closeServer() {
+        handleStop();
     }
 
     private void showAlert(String title, String messages, Alert.AlertType type) {

@@ -30,6 +30,7 @@ public class CryptFactory {
             return (ICrypt) obj;
         } catch (Exception e) {
             //日志打印由Util单元完成
+            //logger统一由Util管理
             logger.info(com.charles.misc.Util.getErrorMessage(e));
         }
         return null;
